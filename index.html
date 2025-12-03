@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMH | Purchase Orders Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DSOG EMH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a192f">
     <style>
         :root {
             --navy-blue: #0a192f;
@@ -12,291 +14,290 @@
             --navy-lighter: #303c55;
             --accent-blue: #64ffda;
             --white: #ffffff;
-            --light-gray: #ccd6f6;
+            --light-gray: #eef2f7;
+            --gray: #8892b0;
             --shadow: rgba(2, 12, 27, 0.7);
+            --bottom-nav-height: 70px;
+            --header-height: 60px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
+        html, body {
+            height: 100%;
+            background-color: var(--light-gray);
+            overflow-x: hidden;
         }
 
-        /* Header & Navigation */
-        .header {
+        /* Header */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
             background-color: var(--navy-blue);
             color: var(--white);
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 12px var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
+            padding: 0 20px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px var(--shadow);
         }
 
-        .logo {
+        .franchise-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            letter-spacing: 0.5px;
+        }
+
+        .app-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-            font-weight: 700;
+            gap: 8px;
         }
 
-        .logo i {
+        .app-logo i {
             color: var(--accent-blue);
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        /* Main Content */
+        .app-content {
+            padding-top: var(--header-height);
+            padding-bottom: var(--bottom-nav-height);
+            min-height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: var(--navy-lighter);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 2rem;
-        }
-
-        /* Sidebar */
-        .sidebar {
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-height);
             background-color: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            padding: 1.5rem;
-            height: fit-content;
-        }
-
-        .nav-menu {
-            list-style: none;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom, 0);
         }
 
         .nav-item {
-            margin-bottom: 10px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            color: var(--navy-blue);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-link:hover {
-            background-color: rgba(10, 25, 47, 0.05);
-        }
-
-        .nav-link.active {
-            background-color: var(--navy-blue);
-            color: var(--white);
-        }
-
-        /* Main Content */
-        .main-content {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* Dashboard Header */
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 8px 0;
         }
 
-        .dashboard-title {
+        .nav-item.active {
             color: var(--navy-blue);
-            font-size: 1.8rem;
-            font-weight: 700;
         }
 
-        /* Stats Cards */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
+        .nav-item.active .nav-icon {
             transform: translateY(-5px);
         }
 
+        .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        /* Dashboard Page */
+        .page {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .greeting {
+            margin-bottom: 25px;
+        }
+
+        .greeting h1 {
+            color: var(--navy-blue);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .greeting p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
         }
 
-        .stat-info h3 {
-            font-size: 2rem;
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .stat-change.positive {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+
+        .stat-change.negative {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
             color: var(--navy-blue);
             margin-bottom: 5px;
         }
 
-        .stat-info p {
-            color: #666;
-            font-size: 0.9rem;
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
         }
 
-        /* Purchase Order Actions */
-        .actions-title {
-            color: var(--navy-blue);
-            margin: 1.5rem 0 1rem 0;
-            font-size: 1.4rem;
-        }
-
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .action-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-
-        .action-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-blue);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.2rem;
-            font-size: 2rem;
-        }
-
-        .action-title {
-            color: var(--navy-blue);
-            font-size: 1.3rem;
-            margin-bottom: 0.8rem;
-            font-weight: 600;
-        }
-
-        .action-desc {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-        }
-
-        .action-btn {
-            background-color: var(--navy-blue);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            max-width: 200px;
-        }
-
-        .action-btn:hover {
-            background-color: var(--navy-light);
-            transform: scale(1.05);
-        }
-
-        /* Recent Activity */
-        .activity-section {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
+        /* Quick Actions */
         .section-title {
             color: var(--navy-blue);
-            margin-bottom: 1.2rem;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .action-card:active {
+            transform: scale(0.98);
+            border-color: var(--accent-blue);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .action-title {
+            color: var(--navy-blue);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            color: var(--gray);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Recent Activity */
         .activity-list {
-            list-style: none;
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
         }
 
         .activity-item {
             display: flex;
             align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .activity-item:last-child {
@@ -304,70 +305,71 @@
         }
 
         .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1rem;
-            font-size: 1rem;
+            margin-right: 15px;
+            font-size: 1.1rem;
         }
 
-        .activity-details {
+        .activity-content {
             flex: 1;
         }
 
-        .activity-details h4 {
+        .activity-title {
             color: var(--navy-blue);
-            margin-bottom: 5px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
 
-        .activity-details p {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .activity-time {
-            color: #888;
+        .activity-desc {
+            color: var(--gray);
             font-size: 0.85rem;
         }
 
-        /* Modal for Google Form */
+        .activity-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(10, 25, 47, 0.95);
+            z-index: 2000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: var(--header-height) 0 var(--bottom-nav-height);
         }
 
-        .modal-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        .modal.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
         }
 
         .modal-header {
-            background-color: var(--navy-blue);
-            color: white;
-            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            background: var(--navy-blue);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 1;
         }
 
         .modal-title {
+            color: var(--white);
             font-size: 1.3rem;
             font-weight: 600;
         }
@@ -375,385 +377,823 @@
         .close-modal {
             background: none;
             border: none;
-            color: white;
+            color: var(--white);
             font-size: 1.5rem;
-            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
         }
 
-        .modal-body {
-            padding: 0;
+        .close-modal:active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .modal-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .modal-item:active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--accent-blue);
+        }
+
+        .modal-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        .modal-item-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .modal-item-desc {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        /* Google Form Modal */
+        .form-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--white);
+            z-index: 3000;
+        }
+
+        .form-modal.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-modal-header {
+            background: var(--navy-blue);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-modal-title {
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .form-iframe {
             flex: 1;
-            overflow: hidden;
-        }
-
-        .modal-iframe {
             width: 100%;
-            height: 70vh;
             border: none;
         }
 
-        /* Footer */
-        .footer {
-            background-color: var(--navy-blue);
-            color: var(--light-gray);
-            text-align: center;
-            padding: 1.5rem;
-            margin-top: 3rem;
-            font-size: 0.9rem;
+        /* Pull to refresh indicator */
+        .refresh-indicator {
+            position: absolute;
+            top: -50px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
         }
 
-        /* Responsive Design */
-        @media (max-width: 992px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                display: none;
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Safe area for notch phones */
+        @supports (padding: max(0px)) {
+            .app-content, .modal {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
             }
         }
 
-        @media (max-width: 768px) {
-            .stats-container {
-                grid-template-columns: 1fr;
+        /* Desktop adaptation */
+        @media (min-width: 768px) {
+            .app-content {
+                max-width: 768px;
+                margin: 0 auto;
             }
             
-            .actions-grid {
-                grid-template-columns: 1fr;
+            .stats-grid,
+            .actions-grid,
+            .modal-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
             }
             
-            .header, .container {
-                padding: 1rem;
+            .bottom-nav {
+                max-width: 768px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 20px 20px 0 0;
+                bottom: 20px;
+                height: 80px;
+                box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
             }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-cubes"></i>
-                <span>Enterprise Management Hub</span>
-            </div>
-            <div class="user-info">
-                <div class="user-avatar">JD</div>
-                <div>
-                    <div style="font-weight: 600;">John Doe</div>
-                    <div style="font-size: 0.8rem;">Nairobi Region • Store #042</div>
-                </div>
-            </div>
+    <header class="app-header">
+        <div class="franchise-name" id="franchiseName">NBO-DSOG001</div>
+        <div class="app-logo">
+            <i class="fas fa-cube"></i>
+            <span>DSOG EMH</span>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active">
-                        <i class="fas fa-clipboard-list"></i>
-                        <span>Purchase Orders</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Sales Management</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-boxes"></i>
-                        <span>Inventory</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                        <span>Invoices</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-truck"></i>
-                        <span>Suppliers</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Reports</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="fas fa-cog"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-            </ul>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Dashboard Header -->
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">
-                    <i class="fas fa-clipboard-list" style="color: var(--accent-blue); margin-right: 10px;"></i>
-                    Purchase Orders Dashboard
-                </h1>
-                <div style="color: var(--navy-lighter); font-size: 0.9rem;">
-                    Last updated: Today, 10:30 AM
-                </div>
+    <!-- Main Content -->
+    <main class="app-content" id="mainContent">
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboardPage">
+            <div class="greeting">
+                <h1 id="greetingText">Good morning</h1>
+                <p>Here's your daily overview</p>
             </div>
 
             <!-- Stats Cards -->
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
-                        <i class="fas fa-file-alt"></i>
+            <div class="stats-grid">
+                <div class="stat-card" onclick="openForm('new-po')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="stat-change positive">+2</div>
                     </div>
-                    <div class="stat-info">
-                        <h3>12</h3>
-                        <p>Pending Approvals</p>
-                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Pending Orders</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                        <i class="fas fa-clock"></i>
+
+                <div class="stat-card" onclick="openForm('sales')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-change positive">+12%</div>
                     </div>
-                    <div class="stat-info">
-                        <h3>5</h3>
-                        <p>In Process</p>
-                    </div>
+                    <div class="stat-value">$3,842</div>
+                    <div class="stat-label">Today's Sales</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">
-                        <i class="fas fa-check-circle"></i>
+
+                <div class="stat-card" onclick="openForm('inventory')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="stat-change negative">-3</div>
                     </div>
-                    <div class="stat-info">
-                        <h3>47</h3>
-                        <p>Completed This Month</p>
-                    </div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Low Stock Items</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
-                        <i class="fas fa-dollar-sign"></i>
+
+                <div class="stat-card" onclick="openForm('requisition')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-change positive">+5</div>
                     </div>
-                    <div class="stat-info">
-                        <h3>$8,450</h3>
-                        <p>Total This Month</p>
-                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Active Requisitions</div>
                 </div>
             </div>
 
-            <!-- Purchase Order Actions -->
-            <h2 class="actions-title">Purchase Order Actions</h2>
+            <!-- Quick Actions -->
+            <h2 class="section-title">
+                <i class="fas fa-bolt" style="color: var(--accent-blue);"></i>
+                Quick Actions
+            </h2>
             <div class="actions-grid">
-                <!-- New Purchase Order -->
-                <div class="action-card" onclick="openGoogleForm('new-po')">
-                    <div class="action-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                <div class="action-card" onclick="openForm('new-po')">
+                    <div class="action-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
                         <i class="fas fa-plus-circle"></i>
                     </div>
-                    <h3 class="action-title">New Purchase Order</h3>
-                    <p class="action-desc">Create a new purchase requisition. Select items, quantities, and submit for regional approval.</p>
-                    <button class="action-btn">Create New PO</button>
+                    <div class="action-title">New PO</div>
+                    <div class="action-desc">Create purchase order</div>
                 </div>
 
-                <!-- Track Order -->
-                <div class="action-card" onclick="openGoogleForm('track-po')">
-                    <div class="action-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
-                        <i class="fas fa-search"></i>
+                <div class="action-card" onclick="openForm('sales-entry')">
+                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-cash-register"></i>
                     </div>
-                    <h3 class="action-title">Track Order Status</h3>
-                    <p class="action-desc">Check the status of your submitted purchase orders. View approval stage and estimated delivery.</p>
-                    <button class="action-btn">Track Order</button>
+                    <div class="action-title">Sales Entry</div>
+                    <div class="action-desc">Record daily sales</div>
                 </div>
 
-                <!-- Order History -->
-                <div class="action-card" onclick="openGoogleForm('history-po')">
-                    <div class="action-icon" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
-                        <i class="fas fa-history"></i>
+                <div class="action-card" onclick="openForm('stock-check')">
+                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
-                    <h3 class="action-title">Order History</h3>
-                    <p class="action-desc">View all past purchase orders, filter by date, status, or supplier. Export data for reporting.</p>
-                    <button class="action-btn">View History</button>
+                    <div class="action-title">Stock Check</div>
+                    <div class="action-desc">Update inventory</div>
                 </div>
 
-                <!-- Drafts -->
-                <div class="action-card" onclick="openGoogleForm('draft-po')">
-                    <div class="action-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <h3 class="action-title">Draft Orders</h3>
-                    <p class="action-desc">Continue working on saved draft purchase orders. Edit and submit when ready.</p>
-                    <button class="action-btn">View Drafts</button>
-                </div>
-
-                <!-- Supplier Catalog -->
-                <div class="action-card" onclick="openGoogleForm('supplier-catalog')">
-                    <div class="action-icon" style="background-color: rgba(111, 66, 193, 0.1); color: #6f42c1;">
-                        <i class="fas fa-address-book"></i>
-                    </div>
-                    <h3 class="action-title">Supplier Catalog</h3>
-                    <p class="action-desc">Browse approved suppliers and their catalogs. Check product availability and pricing.</p>
-                    <button class="action-btn">Browse Catalog</button>
-                </div>
-
-                <!-- Quick Reorder -->
-                <div class="action-card" onclick="openGoogleForm('quick-reorder')">
-                    <div class="action-icon" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                <div class="action-card" onclick="openForm('quick-order')">
+                    <div class="action-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
                         <i class="fas fa-redo"></i>
                     </div>
-                    <h3 class="action-title">Quick Reorder</h3>
-                    <p class="action-desc">Reorder frequently purchased items with one click. Based on your purchase history.</p>
-                    <button class="action-btn">Quick Reorder</button>
+                    <div class="action-title">Quick Reorder</div>
+                    <div class="action-desc">Reorder items</div>
                 </div>
             </div>
 
             <!-- Recent Activity -->
-            <div class="activity-section">
-                <h2 class="section-title">
-                    <i class="fas fa-bell" style="color: var(--accent-blue);"></i>
-                    Recent Purchase Order Activity
-                </h2>
-                <ul class="activity-list">
-                    <li class="activity-item">
-                        <div class="activity-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                        <div class="activity-details">
-                            <h4>New PO Created</h4>
-                            <p>Purchase Order #PO-2023-0421 for Nairobi Store</p>
-                        </div>
-                        <div class="activity-time">10:15 AM</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="activity-details">
-                            <h4>PO Approved</h4>
-                            <p>Purchase Order #PO-2023-0418 approved by Regional Manager</p>
-                        </div>
-                        <div class="activity-time">Yesterday, 3:45 PM</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="activity-details">
-                            <h4>Awaiting Approval</h4>
-                            <p>Purchase Order #PO-2023-0419 pending regional approval</p>
-                        </div>
-                        <div class="activity-time">2 days ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
-                            <i class="fas fa-truck"></i>
-                        </div>
-                        <div class="activity-details">
-                            <h4>Order Shipped</h4>
-                            <p>Purchase Order #PO-2023-0415 shipped by Supplier</p>
-                        </div>
-                        <div class="activity-time">3 days ago</div>
-                    </li>
-                </ul>
+            <h2 class="section-title">
+                <i class="fas fa-history" style="color: var(--accent-blue);"></i>
+                Recent Activity
+            </h2>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">PO #2023-0421 Created</div>
+                        <div class="activity-desc">Pending regional approval</div>
+                    </div>
+                    <div class="activity-time">10:15 AM</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Daily Sales Submitted</div>
+                        <div class="activity-desc">$3,842 recorded</div>
+                    </div>
+                    <div class="activity-time">Yesterday</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-title">Low Stock Alert</div>
+                        <div class="activity-desc">Coffee beans running low</div>
+                    </div>
+                    <div class="activity-time">2 days ago</div>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <!-- Modal for Google Forms -->
-    <div id="googleFormModal" class="modal">
+        <!-- Inventory Page -->
+        <div class="page" id="inventoryPage">
+            <div class="greeting">
+                <h1>Inventory</h1>
+                <p>Manage your stock levels</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" onclick="openForm('stock-check')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('low-stock')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                            <i class="fas fa-exclamation"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Low Stock</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('inventory-count')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">$28.5K</div>
+                    <div class="stat-label">Total Value</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('stock-movement')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">142</div>
+                    <div class="stat-label">Today's Moves</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">
+                <i class="fas fa-tasks" style="color: var(--accent-blue);"></i>
+                Inventory Actions
+            </h2>
+            <div class="actions-grid">
+                <div class="action-card" onclick="openForm('stock-count')">
+                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <div class="action-title">Stock Count</div>
+                    <div class="action-desc">Physical count</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('receive-stock')">
+                    <div class="action-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                    <div class="action-title">Receive Stock</div>
+                    <div class="action-desc">Incoming items</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('adjust-stock')">
+                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-adjust"></i>
+                    </div>
+                    <div class="action-title">Adjust Stock</div>
+                    <div class="action-desc">Correct levels</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('stock-report')">
+                    <div class="action-icon" style="background: rgba(108, 117, 125, 0.1); color: #6c757d;">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <div class="action-title">Stock Report</div>
+                    <div class="action-desc">Generate report</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Page -->
+        <div class="page" id="salesPage">
+            <div class="greeting">
+                <h1>Sales</h1>
+                <p>Track and manage sales</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card" onclick="openForm('today-sales')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="stat-change positive">+12%</div>
+                    </div>
+                    <div class="stat-value">$3,842</div>
+                    <div class="stat-label">Today</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('week-sales')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                            <i class="fas fa-calendar-week"></i>
+                        </div>
+                        <div class="stat-change positive">+8%</div>
+                    </div>
+                    <div class="stat-value">$21,459</div>
+                    <div class="stat-label">This Week</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('month-sales')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">$84,127</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+
+                <div class="stat-card" onclick="openForm('avg-transaction')">
+                    <div class="stat-header">
+                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">$42.50</div>
+                    <div class="stat-label">Avg. Transaction</div>
+                </div>
+            </div>
+
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar" style="color: var(--accent-blue);"></i>
+                Sales Actions
+            </h2>
+            <div class="actions-grid">
+                <div class="action-card" onclick="openForm('record-sales')">
+                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="action-title">Record Sales</div>
+                    <div class="action-desc">Enter sales data</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('sales-report')">
+                    <div class="action-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="action-title">Sales Report</div>
+                    <div class="action-desc">Generate report</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('void-transaction')">
+                    <div class="action-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="action-title">Void Sale</div>
+                    <div class="action-desc">Cancel transaction</div>
+                </div>
+
+                <div class="action-card" onclick="openForm('sales-target')">
+                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="action-title">Sales Target</div>
+                    <div class="action-desc">View targets</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-page="dashboardPage">
+            <i class="fas fa-home nav-icon"></i>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-page="inventoryPage">
+            <i class="fas fa-boxes nav-icon"></i>
+            <span class="nav-label">Inventory</span>
+        </a>
+        <a href="#" class="nav-item" data-page="salesPage">
+            <i class="fas fa-chart-line nav-icon"></i>
+            <span class="nav-label">Sales</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openMoreModal()">
+            <i class="fas fa-ellipsis-h nav-icon"></i>
+            <span class="nav-label">More</span>
+        </a>
+    </nav>
+
+    <!-- More Options Modal -->
+    <div class="modal" id="moreModal">
+        <div class="modal-header">
+            <div class="modal-title">More Options</div>
+            <button class="close-modal" onclick="closeMoreModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle">Google Form</div>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <iframe id="formIframe" class="modal-iframe" src="about:blank"></iframe>
+            <div class="modal-grid">
+                <div class="modal-item" onclick="openForm('purchase-orders')">
+                    <i class="fas fa-clipboard-list modal-icon"></i>
+                    <div class="modal-item-title">Purchase Orders</div>
+                    <div class="modal-item-desc">Create and track POs</div>
+                </div>
+
+                <div class="modal-item" onclick="openForm('requisitions')">
+                    <i class="fas fa-clipboard-check modal-icon"></i>
+                    <div class="modal-item-title">Requisitions</div>
+                    <div class="modal-item-desc">Internal requests</div>
+                </div>
+
+                <div class="modal-item" onclick="openForm('suppliers')">
+                    <i class="fas fa-address-book modal-icon"></i>
+                    <div class="modal-item-title">Suppliers</div>
+                    <div class="modal-item-desc">Manage vendors</div>
+                </div>
+
+                <div class="modal-item" onclick="openForm('reports')">
+                    <i class="fas fa-chart-pie modal-icon"></i>
+                    <div class="modal-item-title">Reports</div>
+                    <div class="modal-item-desc">Generate reports</div>
+                </div>
+
+                <div class="modal-item" onclick="openForm('settings')">
+                    <i class="fas fa-cog modal-icon"></i>
+                    <div class="modal-item-title">Settings</div>
+                    <div class="modal-item-desc">App settings</div>
+                </div>
+
+                <div class="modal-item" onclick="openForm('help')">
+                    <i class="fas fa-question-circle modal-icon"></i>
+                    <div class="modal-item-title">Help</div>
+                    <div class="modal-item-desc">Get assistance</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div>Enterprise Management Hub (EMH) - Franchise Management System</div>
-        <div style="margin-top: 5px; font-size: 0.8rem; color: #8892b0;">
-            Powered by Google Workspace & Apps Script | © 2023 All Rights Reserved
+    <!-- Google Form Modal -->
+    <div class="form-modal" id="formModal">
+        <div class="form-modal-header">
+            <div class="form-modal-title" id="formModalTitle">Google Form</div>
+            <button class="close-modal" onclick="closeFormModal()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-    </footer>
+        <iframe class="form-iframe" id="formIframe"></iframe>
+    </div>
 
     <script>
-        // Google Form URLs - Replace these with your actual Google Form URLs
+        // Google Form URLs - Replace with your actual Google Forms
         const googleForms = {
             'new-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_1/viewform?embedded=true',
-            'track-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_2/viewform?embedded=true',
-            'history-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_3/viewform?embedded=true',
-            'draft-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_4/viewform?embedded=true',
-            'supplier-catalog': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_5/viewform?embedded=true',
-            'quick-reorder': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_6/viewform?embedded=true'
+            'sales': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_2/viewform?embedded=true',
+            'inventory': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_3/viewform?embedded=true',
+            'requisition': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_4/viewform?embedded=true',
+            'sales-entry': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_5/viewform?embedded=true',
+            'stock-check': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_6/viewform?embedded=true',
+            'quick-order': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_7/viewform?embedded=true',
+            'purchase-orders': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_8/viewform?embedded=true',
+            'requisitions': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_9/viewform?embedded=true',
+            'suppliers': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_10/viewform?embedded=true',
+            'reports': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_11/viewform?embedded=true',
+            'settings': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_12/viewform?embedded=true',
+            'help': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_13/viewform?embedded=true'
         };
 
+        // Form titles
+        const formTitles = {
+            'new-po': 'New Purchase Order',
+            'sales': 'Sales Management',
+            'inventory': 'Inventory Management',
+            'requisition': 'Requisitions',
+            'sales-entry': 'Sales Entry',
+            'stock-check': 'Stock Check',
+            'quick-order': 'Quick Reorder',
+            'purchase-orders': 'Purchase Orders',
+            'requisitions': 'Requisitions',
+            'suppliers': 'Suppliers',
+            'reports': 'Reports',
+            'settings': 'Settings',
+            'help': 'Help Center'
+        };
+
+        // DOM Elements
+        const mainContent = document.getElementById('mainContent');
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const moreModal = document.getElementById('moreModal');
+        const formModal = document.getElementById('formModal');
+        const formIframe = document.getElementById('formIframe');
+        const formModalTitle = document.getElementById('formModalTitle');
+        const franchiseName = document.getElementById('franchiseName');
+        const greetingText = document.getElementById('greetingText');
+
+        // Set greeting based on time of day
+        function setGreeting() {
+            const hour = new Date().getHours();
+            let greeting = 'Good ';
+            
+            if (hour < 12) greeting += 'morning';
+            else if (hour < 18) greeting += 'afternoon';
+            else greeting += 'evening';
+            
+            greetingText.textContent = greeting;
+        }
+
+        // Switch between pages
+        navItems.forEach(item => {
+            if (item.dataset.page) {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Update active nav item
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Hide all pages
+                    pages.forEach(page => page.classList.remove('active'));
+                    
+                    // Show selected page
+                    const pageId = item.dataset.page;
+                    document.getElementById(pageId).classList.add('active');
+                    
+                    // Scroll to top
+                    mainContent.scrollTop = 0;
+                });
+            }
+        });
+
         // Modal functions
-        function openGoogleForm(formType) {
-            const modal = document.getElementById('googleFormModal');
-            const iframe = document.getElementById('formIframe');
-            const modalTitle = document.getElementById('modalTitle');
-            
-            // Set modal title based on form type
-            const titles = {
-                'new-po': 'Create New Purchase Order',
-                'track-po': 'Track Purchase Order',
-                'history-po': 'Purchase Order History',
-                'draft-po': 'Draft Purchase Orders',
-                'supplier-catalog': 'Supplier Catalog',
-                'quick-reorder': 'Quick Reorder'
-            };
-            
-            modalTitle.textContent = titles[formType] || 'Google Form';
-            
-            // Load the Google Form in iframe
-            iframe.src = googleForms[formType] || 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID/viewform?embedded=true';
-            
-            // Show modal
-            modal.style.display = 'flex';
+        function openMoreModal() {
+            moreModal.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() {
-            const modal = document.getElementById('googleFormModal');
-            const iframe = document.getElementById('formIframe');
-            
-            // Hide modal and reset iframe
-            modal.style.display = 'none';
-            iframe.src = 'about:blank';
+        function closeMoreModal() {
+            moreModal.classList.remove('active');
             document.body.style.overflow = 'auto';
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('googleFormModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+        function openForm(formType) {
+            const formUrl = googleForms[formType] || 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID/viewform?embedded=true';
+            const title = formTitles[formType] || 'Google Form';
+            
+            formModalTitle.textContent = title;
+            formIframe.src = formUrl;
+            formModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Close more modal if open
+            closeMoreModal();
         }
 
-        // Simulate data updates (in real app, this would come from Apps Script)
-        function updateStats() {
-            // This would be replaced with actual API call to Apps Script
-            console.log("Updating dashboard stats...");
+        function closeFormModal() {
+            formModal.classList.remove('active');
+            formIframe.src = 'about:blank';
+            document.body.style.overflow = 'auto';
         }
 
-        // Update stats every 60 seconds
-        setInterval(updateStats, 60000);
+        // Pull to refresh simulation
+        let touchStartY = 0;
+        let isRefreshing = false;
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("EMH Purchase Orders Dashboard loaded");
+        mainContent.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
         });
+
+        mainContent.addEventListener('touchmove', (e) => {
+            if (mainContent.scrollTop === 0 && e.touches[0].clientY > touchStartY + 50 && !isRefreshing) {
+                isRefreshing = true;
+                simulateRefresh();
+            }
+        });
+
+        function simulateRefresh() {
+            // Show refreshing state
+            const activePage = document.querySelector('.page.active');
+            activePage.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                // Simulate data refresh
+                updateDashboardData();
+                activePage.style.opacity = '1';
+                isRefreshing = false;
+                
+                // Show refresh notification
+                showNotification('Data refreshed successfully');
+            }, 1500);
+        }
+
+        function updateDashboardData() {
+            // Update stats with random variations
+            const stats = document.querySelectorAll('.stat-value');
+            stats.forEach(stat => {
+                const current = parseInt(stat.textContent.replace(/[^0-9]/g, ''));
+                const change = Math.floor(Math.random() * 10) - 2; // -2 to +7
+                const newValue = Math.max(0, current + change);
+                
+                // Animate the change
+                stat.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    stat.textContent = stat.textContent.replace(/[0-9]+/, newValue);
+                    stat.style.transform = 'scale(1)';
+                }, 300);
+            });
+        }
+
+        function showNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--navy-blue);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px var(--shadow);
+                z-index: 10000;
+                animation: slideDown 0.3s ease;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize the app
+        function initApp() {
+            setGreeting();
+            
+            // Simulate loading data
+            setTimeout(updateDashboardData, 500);
+            
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideDown {
+                    from { transform: translate(-50%, -20px); opacity: 0; }
+                    to { transform: translate(-50%, 0); opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translate(-50%, 0); opacity: 1; }
+                    to { transform: translate(-50%, -20px); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Set franchise name from URL or localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('store') || localStorage.getItem('emh_store') || 'NBO-DSOG001';
+            franchiseName.textContent = storeId;
+            localStorage.setItem('emh_store', storeId);
+            
+            // Make app installable
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(console.error);
+            }
+            
+            // Prevent pull-to-refresh on form modal
+            formModal.addEventListener('touchmove', (e) => {
+                if (formModal.classList.contains('active')) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // Handle back button for modals
+        window.addEventListener('popstate', () => {
+            if (moreModal.classList.contains('active')) {
+                closeMoreModal();
+            } else if (formModal.classList.contains('active')) {
+                closeFormModal();
+            }
+        });
+
+        // Update time periodically
+        setInterval(() => {
+            const now = new Date();
+            const timeElements = document.querySelectorAll('.activity-time');
+            
+            // Update relative times
+            timeElements.forEach(element => {
+                if (element.textContent.includes('AM') || element.textContent.includes('PM')) {
+                    // This is an absolute time, skip
+                    return;
+                }
+                
+                // Update relative times (simplified)
+                if (element.textContent === '10:15 AM') {
+                    // Keep as is
+                }
+            });
+        }, 60000); // Update every minute
     </script>
 </body>
 </html>
