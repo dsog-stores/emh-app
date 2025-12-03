@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>DSOG EMH</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#0a192f">
     <style>
         :root {
             --navy-blue: #0a192f;
@@ -14,31 +12,38 @@
             --navy-lighter: #303c55;
             --accent-blue: #64ffda;
             --white: #ffffff;
-            --light-gray: #eef2f7;
+            --light-gray: #f8f9fa;
             --gray: #8892b0;
             --shadow: rgba(2, 12, 27, 0.7);
             --bottom-nav-height: 70px;
             --header-height: 60px;
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            touch-action: manipulation;
         }
 
         html, body {
             height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--light-gray);
-            overflow-x: hidden;
+            position: fixed;
         }
 
         /* Header */
         .app-header {
             position: fixed;
-            top: 0;
+            top: var(--safe-area-top);
             left: 0;
             right: 0;
             height: var(--header-height);
@@ -47,20 +52,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 16px;
             z-index: 1000;
-            box-shadow: 0 2px 10px var(--shadow);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .franchise-name {
-            font-size: 1.1rem;
+            font-size: 14px;
             font-weight: 600;
             color: var(--accent-blue);
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
         }
 
         .app-logo {
-            font-size: 1.3rem;
+            font-size: 18px;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -69,33 +79,64 @@
 
         .app-logo i {
             color: var(--accent-blue);
+            font-size: 16px;
         }
 
-        /* Main Content */
-        .app-content {
-            padding-top: var(--header-height);
-            padding-bottom: var(--bottom-nav-height);
-            min-height: 100vh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
+        /* Main Content Area */
+        .app-container {
             position: fixed;
-            bottom: 0;
+            top: calc(var(--header-height) + var(--safe-area-top));
             left: 0;
             right: 0;
+            bottom: calc(var(--bottom-nav-height) + 20px + var(--safe-area-bottom));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            background-color: var(--light-gray);
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            min-height: 100%;
+            padding: 20px 16px;
+            padding-bottom: 40px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Floating Bottom Navigation */
+        .floating-nav {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            bottom: calc(20px + var(--safe-area-bottom));
             height: var(--bottom-nav-height);
-            background-color: var(--white);
+            background: var(--white);
+            border-radius: 20px;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
             z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom, 0);
+            padding: 0 8px;
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        .floating-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Nav Items */
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -105,105 +146,124 @@
             height: 100%;
             color: var(--gray);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 8px 0;
+            position: relative;
+            border-radius: 12px;
+            margin: 0 2px;
         }
 
         .nav-item.active {
             color: var(--navy-blue);
+            background: rgba(100, 255, 218, 0.08);
         }
 
-        .nav-item.active .nav-icon {
-            transform: translateY(-5px);
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-blue);
         }
 
         .nav-icon {
-            font-size: 1.3rem;
+            font-size: 20px;
             margin-bottom: 4px;
-            transition: transform 0.2s ease;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: translateY(-4px);
+            color: var(--accent-blue);
         }
 
         .nav-label {
-            font-size: 0.7rem;
+            font-size: 11px;
             font-weight: 500;
+            letter-spacing: 0.2px;
         }
 
-        /* Dashboard Page */
-        .page {
-            display: none;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        /* Greeting Section */
         .greeting {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
         .greeting h1 {
             color: var(--navy-blue);
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            font-size: 24px;
+            margin-bottom: 4px;
+            font-weight: 700;
         }
 
         .greeting p {
             color: var(--gray);
-            font-size: 1rem;
+            font-size: 14px;
+            font-weight: 400;
         }
 
-        /* Stats Cards */
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
             background: var(--white);
             border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .stat-card:active {
             transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), rgba(100, 255, 218, 0.3));
+            border-radius: 16px 16px 0 0;
         }
 
         .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 16px;
+            background: rgba(100, 255, 218, 0.1);
+            color: var(--accent-blue);
         }
 
         .stat-change {
-            font-size: 0.8rem;
+            font-size: 12px;
             font-weight: 600;
             padding: 3px 8px;
-            border-radius: 20px;
-        }
-
-        .stat-change.positive {
+            border-radius: 12px;
             background: rgba(40, 167, 69, 0.1);
             color: #28a745;
         }
@@ -214,74 +274,105 @@
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 24px;
             font-weight: 700;
             color: var(--navy-blue);
-            margin-bottom: 5px;
+            margin-bottom: 2px;
+            line-height: 1.2;
         }
 
         .stat-label {
-            font-size: 0.85rem;
+            font-size: 12px;
             color: var(--gray);
+            font-weight: 400;
+        }
+
+        /* Section Titles */
+        .section-title {
+            color: var(--navy-blue);
+            font-size: 18px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* Quick Actions */
-        .section-title {
-            color: var(--navy-blue);
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 28px;
         }
 
         .action-card {
             background: var(--white);
             border-radius: 16px;
-            padding: 25px 20px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .action-card:active {
-            transform: scale(0.98);
-            border-color: var(--accent-blue);
+            transform: scale(0.97);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(100, 255, 218, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:active::before {
+            opacity: 1;
         }
 
         .action-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 12px;
+            background: rgba(100, 255, 218, 0.1);
+            color: var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .action-card:active .action-icon {
+            transform: scale(1.1);
+            background: rgba(100, 255, 218, 0.2);
         }
 
         .action-title {
             color: var(--navy-blue);
-            font-size: 1rem;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .action-desc {
             color: var(--gray);
-            font-size: 0.85rem;
+            font-size: 12px;
             line-height: 1.4;
+            font-weight: 400;
         }
 
         /* Recent Activity */
@@ -289,15 +380,21 @@
             background: var(--white);
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            margin-bottom: 20px;
         }
 
         .activity-item {
             display: flex;
             align-items: center;
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            transition: background-color 0.2s ease;
+        }
+
+        .activity-item:active {
+            background-color: rgba(100, 255, 218, 0.05);
         }
 
         .activity-item:last-child {
@@ -305,168 +402,198 @@
         }
 
         .activity-icon {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 1.1rem;
+            margin-right: 12px;
+            font-size: 16px;
+            background: rgba(100, 255, 218, 0.1);
+            color: var(--accent-blue);
+            flex-shrink: 0;
         }
 
         .activity-content {
             flex: 1;
+            min-width: 0;
         }
 
         .activity-title {
             color: var(--navy-blue);
             font-weight: 600;
             margin-bottom: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .activity-desc {
             color: var(--gray);
-            font-size: 0.85rem;
+            font-size: 12px;
+            font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .activity-time {
             color: var(--gray);
-            font-size: 0.8rem;
+            font-size: 11px;
+            font-weight: 400;
+            margin-left: 8px;
             white-space: nowrap;
-            margin-left: 10px;
+            flex-shrink: 0;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
+        /* More Options Modal */
+        .more-modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(10, 25, 47, 0.95);
+            background: rgba(10, 25, 47, 0.98);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 2000;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: var(--header-height) 0 var(--bottom-nav-height);
+            display: none;
+            flex-direction: column;
+            animation: modalFadeIn 0.3s ease;
         }
 
-        .modal.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        .more-modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-header {
-            position: sticky;
-            top: 0;
-            background: var(--navy-blue);
-            padding: 15px 20px;
+            padding: 20px 16px;
+            padding-top: calc(var(--safe-area-top) + 20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1;
         }
 
         .modal-title {
             color: var(--white);
-            font-size: 1.3rem;
+            font-size: 20px;
             font-weight: 600;
         }
 
         .close-modal {
-            background: none;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: var(--white);
-            font-size: 1.5rem;
+            font-size: 20px;
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            cursor: pointer;
             transition: background-color 0.2s ease;
         }
 
         .close-modal:active {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-content {
-            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px 16px;
+            padding-bottom: calc(var(--bottom-nav-height) + 40px + var(--safe-area-bottom));
         }
 
         .modal-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
         }
 
         .modal-item {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 16px;
-            padding: 25px 20px;
+            padding: 20px 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             color: var(--white);
             transition: all 0.2s ease;
-            border: 2px solid transparent;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
         }
 
         .modal-item:active {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--accent-blue);
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(0.95);
         }
 
         .modal-icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin-bottom: 12px;
             color: var(--accent-blue);
         }
 
         .modal-item-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            line-height: 1.3;
         }
 
         .modal-item-desc {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            line-height: 1.4;
+            font-size: 10px;
+            opacity: 0.8;
+            line-height: 1.3;
         }
 
         /* Google Form Modal */
         .form-modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--white);
+            background: var(--white);
             z-index: 3000;
+            display: none;
+            flex-direction: column;
         }
 
         .form-modal.active {
             display: flex;
-            flex-direction: column;
         }
 
-        .form-modal-header {
+        .form-header {
             background: var(--navy-blue);
-            padding: 15px 20px;
+            padding: 16px;
+            padding-top: calc(var(--safe-area-top) + 16px);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .form-modal-title {
+        .form-title {
             color: var(--white);
-            font-size: 1.2rem;
+            font-size: 18px;
             font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
         }
 
         .form-iframe {
@@ -475,62 +602,88 @@
             border: none;
         }
 
-        /* Pull to refresh indicator */
-        .refresh-indicator {
-            position: absolute;
-            top: -50px;
-            left: 0;
-            right: 0;
-            height: 50px;
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: calc(var(--header-height) + var(--safe-area-top) + 20px);
+            left: 16px;
+            right: 16px;
+            background: var(--navy-blue);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 2000;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: notificationSlideIn 0.3s ease forwards;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--gray);
+            gap: 10px;
         }
 
-        /* Loading skeleton */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: 8px;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Safe area for notch phones */
-        @supports (padding: max(0px)) {
-            .app-content, .modal {
-                padding-left: max(20px, env(safe-area-inset-left));
-                padding-right: max(20px, env(safe-area-inset-right));
+        @keyframes notificationSlideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
 
-        /* Desktop adaptation */
-        @media (min-width: 768px) {
-            .app-content {
-                max-width: 768px;
-                margin: 0 auto;
+        .notification.hiding {
+            animation: notificationSlideOut 0.3s ease forwards;
+        }
+
+        @keyframes notificationSlideOut {
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
             }
-            
+        }
+
+        /* Scrollbar Styling */
+        .app-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .app-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .app-container::-webkit-scrollbar-thumb {
+            background: rgba(100, 255, 218, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 320px) {
             .stats-grid,
-            .actions-grid,
-            .modal-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
+            .actions-grid {
+                grid-template-columns: 1fr;
             }
             
-            .bottom-nav {
-                max-width: 768px;
+            .modal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .floating-nav {
+                left: 12px;
+                right: 12px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 400px;
                 left: 50%;
                 transform: translateX(-50%);
-                border-radius: 20px 20px 0 0;
-                bottom: 20px;
-                height: 80px;
-                box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+                border-left: 1px solid rgba(0, 0, 0, 0.05);
+                border-right: 1px solid rgba(0, 0, 0, 0.05);
+            }
+            
+            .floating-nav {
+                max-width: 400px;
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
     </style>
@@ -545,8 +698,8 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="app-content" id="mainContent">
+    <!-- Main Content Container -->
+    <div class="app-container" id="mainContent">
         <!-- Dashboard Page -->
         <div class="page active" id="dashboardPage">
             <div class="greeting">
@@ -558,7 +711,7 @@
             <div class="stats-grid">
                 <div class="stat-card" onclick="openForm('new-po')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                        <div class="stat-icon">
                             <i class="fas fa-file-invoice"></i>
                         </div>
                         <div class="stat-change positive">+2</div>
@@ -569,7 +722,7 @@
 
                 <div class="stat-card" onclick="openForm('sales')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <div class="stat-icon">
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="stat-change positive">+12%</div>
@@ -580,7 +733,7 @@
 
                 <div class="stat-card" onclick="openForm('inventory')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <div class="stat-icon">
                             <i class="fas fa-boxes"></i>
                         </div>
                         <div class="stat-change negative">-3</div>
@@ -591,7 +744,7 @@
 
                 <div class="stat-card" onclick="openForm('requisition')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <div class="stat-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
                         <div class="stat-change positive">+5</div>
@@ -603,12 +756,12 @@
 
             <!-- Quick Actions -->
             <h2 class="section-title">
-                <i class="fas fa-bolt" style="color: var(--accent-blue);"></i>
+                <i class="fas fa-bolt"></i>
                 Quick Actions
             </h2>
             <div class="actions-grid">
                 <div class="action-card" onclick="openForm('new-po')">
-                    <div class="action-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                    <div class="action-icon">
                         <i class="fas fa-plus-circle"></i>
                     </div>
                     <div class="action-title">New PO</div>
@@ -616,7 +769,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('sales-entry')">
-                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                    <div class="action-icon">
                         <i class="fas fa-cash-register"></i>
                     </div>
                     <div class="action-title">Sales Entry</div>
@@ -624,7 +777,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('stock-check')">
-                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                    <div class="action-icon">
                         <i class="fas fa-clipboard-list"></i>
                     </div>
                     <div class="action-title">Stock Check</div>
@@ -632,7 +785,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('quick-order')">
-                    <div class="action-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                    <div class="action-icon">
                         <i class="fas fa-redo"></i>
                     </div>
                     <div class="action-title">Quick Reorder</div>
@@ -642,12 +795,12 @@
 
             <!-- Recent Activity -->
             <h2 class="section-title">
-                <i class="fas fa-history" style="color: var(--accent-blue);"></i>
+                <i class="fas fa-history"></i>
                 Recent Activity
             </h2>
             <div class="activity-list">
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                <div class="activity-item" onclick="openForm('po-detail')">
+                    <div class="activity-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="activity-content">
@@ -656,8 +809,8 @@
                     </div>
                     <div class="activity-time">10:15 AM</div>
                 </div>
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                <div class="activity-item" onclick="openForm('sales-detail')">
+                    <div class="activity-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div class="activity-content">
@@ -666,8 +819,8 @@
                     </div>
                     <div class="activity-time">Yesterday</div>
                 </div>
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                <div class="activity-item" onclick="openForm('stock-alert')">
+                    <div class="activity-icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                     <div class="activity-content">
@@ -689,7 +842,7 @@
             <div class="stats-grid">
                 <div class="stat-card" onclick="openForm('stock-check')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <div class="stat-icon">
                             <i class="fas fa-box"></i>
                         </div>
                     </div>
@@ -699,7 +852,7 @@
 
                 <div class="stat-card" onclick="openForm('low-stock')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                        <div class="stat-icon">
                             <i class="fas fa-exclamation"></i>
                         </div>
                     </div>
@@ -709,7 +862,7 @@
 
                 <div class="stat-card" onclick="openForm('inventory-count')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <div class="stat-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
                     </div>
@@ -719,7 +872,7 @@
 
                 <div class="stat-card" onclick="openForm('stock-movement')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                        <div class="stat-icon">
                             <i class="fas fa-exchange-alt"></i>
                         </div>
                     </div>
@@ -729,12 +882,12 @@
             </div>
 
             <h2 class="section-title">
-                <i class="fas fa-tasks" style="color: var(--accent-blue);"></i>
+                <i class="fas fa-tasks"></i>
                 Inventory Actions
             </h2>
             <div class="actions-grid">
                 <div class="action-card" onclick="openForm('stock-count')">
-                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                    <div class="action-icon">
                         <i class="fas fa-clipboard-check"></i>
                     </div>
                     <div class="action-title">Stock Count</div>
@@ -742,7 +895,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('receive-stock')">
-                    <div class="action-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                    <div class="action-icon">
                         <i class="fas fa-arrow-down"></i>
                     </div>
                     <div class="action-title">Receive Stock</div>
@@ -750,7 +903,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('adjust-stock')">
-                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                    <div class="action-icon">
                         <i class="fas fa-adjust"></i>
                     </div>
                     <div class="action-title">Adjust Stock</div>
@@ -758,7 +911,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('stock-report')">
-                    <div class="action-icon" style="background: rgba(108, 117, 125, 0.1); color: #6c757d;">
+                    <div class="action-icon">
                         <i class="fas fa-file-export"></i>
                     </div>
                     <div class="action-title">Stock Report</div>
@@ -777,7 +930,7 @@
             <div class="stats-grid">
                 <div class="stat-card" onclick="openForm('today-sales')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <div class="stat-icon">
                             <i class="fas fa-sun"></i>
                         </div>
                         <div class="stat-change positive">+12%</div>
@@ -788,7 +941,7 @@
 
                 <div class="stat-card" onclick="openForm('week-sales')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <div class="stat-icon">
                             <i class="fas fa-calendar-week"></i>
                         </div>
                         <div class="stat-change positive">+8%</div>
@@ -799,7 +952,7 @@
 
                 <div class="stat-card" onclick="openForm('month-sales')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                        <div class="stat-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
                     </div>
@@ -809,7 +962,7 @@
 
                 <div class="stat-card" onclick="openForm('avg-transaction')">
                     <div class="stat-header">
-                        <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <div class="stat-icon">
                             <i class="fas fa-receipt"></i>
                         </div>
                     </div>
@@ -819,12 +972,12 @@
             </div>
 
             <h2 class="section-title">
-                <i class="fas fa-chart-bar" style="color: var(--accent-blue);"></i>
+                <i class="fas fa-chart-bar"></i>
                 Sales Actions
             </h2>
             <div class="actions-grid">
                 <div class="action-card" onclick="openForm('record-sales')">
-                    <div class="action-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+                    <div class="action-icon">
                         <i class="fas fa-plus"></i>
                     </div>
                     <div class="action-title">Record Sales</div>
@@ -832,7 +985,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('sales-report')">
-                    <div class="action-icon" style="background: rgba(0, 123, 255, 0.1); color: #007bff;">
+                    <div class="action-icon">
                         <i class="fas fa-file-alt"></i>
                     </div>
                     <div class="action-title">Sales Report</div>
@@ -840,7 +993,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('void-transaction')">
-                    <div class="action-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                    <div class="action-icon">
                         <i class="fas fa-times-circle"></i>
                     </div>
                     <div class="action-title">Void Sale</div>
@@ -848,7 +1001,7 @@
                 </div>
 
                 <div class="action-card" onclick="openForm('sales-target')">
-                    <div class="action-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                    <div class="action-icon">
                         <i class="fas fa-bullseye"></i>
                     </div>
                     <div class="action-title">Sales Target</div>
@@ -856,10 +1009,10 @@
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
+    <!-- Floating Bottom Navigation -->
+    <nav class="floating-nav">
         <a href="#" class="nav-item active" data-page="dashboardPage">
             <i class="fas fa-home nav-icon"></i>
             <span class="nav-label">Dashboard</span>
@@ -872,14 +1025,14 @@
             <i class="fas fa-chart-line nav-icon"></i>
             <span class="nav-label">Sales</span>
         </a>
-        <a href="#" class="nav-item" onclick="openMoreModal()">
+        <a href="#" class="nav-item" onclick="openMoreModal(event)">
             <i class="fas fa-ellipsis-h nav-icon"></i>
             <span class="nav-label">More</span>
         </a>
     </nav>
 
     <!-- More Options Modal -->
-    <div class="modal" id="moreModal">
+    <div class="more-modal" id="moreModal">
         <div class="modal-header">
             <div class="modal-title">More Options</div>
             <button class="close-modal" onclick="closeMoreModal()">
@@ -891,7 +1044,7 @@
                 <div class="modal-item" onclick="openForm('purchase-orders')">
                     <i class="fas fa-clipboard-list modal-icon"></i>
                     <div class="modal-item-title">Purchase Orders</div>
-                    <div class="modal-item-desc">Create and track POs</div>
+                    <div class="modal-item-desc">Create & track POs</div>
                 </div>
 
                 <div class="modal-item" onclick="openForm('requisitions')">
@@ -929,8 +1082,8 @@
 
     <!-- Google Form Modal -->
     <div class="form-modal" id="formModal">
-        <div class="form-modal-header">
-            <div class="form-modal-title" id="formModalTitle">Google Form</div>
+        <div class="form-header">
+            <div class="form-title" id="formModalTitle">Google Form</div>
             <button class="close-modal" onclick="closeFormModal()">
                 <i class="fas fa-times"></i>
             </button>
@@ -976,13 +1129,29 @@
         // DOM Elements
         const mainContent = document.getElementById('mainContent');
         const pages = document.querySelectorAll('.page');
-        const navItems = document.querySelectorAll('.nav-item');
+        const navItems = document.querySelectorAll('.nav-item[data-page]');
         const moreModal = document.getElementById('moreModal');
         const formModal = document.getElementById('formModal');
         const formIframe = document.getElementById('formIframe');
         const formModalTitle = document.getElementById('formModalTitle');
         const franchiseName = document.getElementById('franchiseName');
         const greetingText = document.getElementById('greetingText');
+
+        // Initialize app
+        function initApp() {
+            setGreeting();
+            setupNavigation();
+            setupTouchEvents();
+            loadFranchiseInfo();
+            
+            // Prevent zoom on mobile
+            disableZoom();
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', handleOrientationChange);
+            
+            console.log('EMH App initialized');
+        }
 
         // Set greeting based on time of day
         function setGreeting() {
@@ -996,38 +1165,112 @@
             greetingText.textContent = greeting;
         }
 
-        // Switch between pages
-        navItems.forEach(item => {
-            if (item.dataset.page) {
+        // Setup navigation
+        function setupNavigation() {
+            // Page navigation
+            navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
-                    // Update active nav item
-                    navItems.forEach(nav => nav.classList.remove('active'));
-                    item.classList.add('active');
-                    
-                    // Hide all pages
-                    pages.forEach(page => page.classList.remove('active'));
-                    
-                    // Show selected page
-                    const pageId = item.dataset.page;
-                    document.getElementById(pageId).classList.add('active');
-                    
-                    // Scroll to top
-                    mainContent.scrollTop = 0;
+                    navigateToPage(item.dataset.page);
                 });
-            }
-        });
+            });
+            
+            // Handle back button
+            window.addEventListener('popstate', () => {
+                if (moreModal.classList.contains('active')) {
+                    closeMoreModal();
+                } else if (formModal.classList.contains('active')) {
+                    closeFormModal();
+                }
+            });
+        }
+
+        // Navigate to page
+        function navigateToPage(pageId) {
+            // Update active nav item
+            navItems.forEach(nav => nav.classList.remove('active'));
+            document.querySelector(`.nav-item[data-page="${pageId}"]`).classList.add('active');
+            
+            // Hide all pages
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Scroll to top
+            mainContent.scrollTop = 0;
+        }
+
+        // Setup touch events
+        function setupTouchEvents() {
+            // Prevent pull-to-refresh on body
+            document.body.addEventListener('touchmove', (e) => {
+                if (e.target === document.body || e.target === mainContent) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Handle touch on cards
+            const cards = document.querySelectorAll('.stat-card, .action-card, .activity-item');
+            cards.forEach(card => {
+                card.addEventListener('touchstart', () => {
+                    card.classList.add('touched');
+                });
+                
+                card.addEventListener('touchend', () => {
+                    card.classList.remove('touched');
+                });
+            });
+        }
+
+        // Disable zoom on mobile
+        function disableZoom() {
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, { passive: false });
+        }
+
+        // Handle orientation change
+        function handleOrientationChange() {
+            // Wait for orientation to complete
+            setTimeout(() => {
+                // Update safe area variables
+                document.documentElement.style.setProperty('--safe-area-top', 'env(safe-area-inset-top, 0px)');
+                document.documentElement.style.setProperty('--safe-area-bottom', 'env(safe-area-inset-bottom, 0px)');
+            }, 100);
+        }
+
+        // Load franchise info
+        function loadFranchiseInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('store') || localStorage.getItem('emh_store') || 'NBO-DSOG001';
+            franchiseName.textContent = storeId;
+            localStorage.setItem('emh_store', storeId);
+        }
 
         // Modal functions
-        function openMoreModal() {
+        function openMoreModal(e) {
+            if (e) e.preventDefault();
             moreModal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            // Add to history for back button support
+            history.pushState({ modal: 'more' }, '');
         }
 
         function closeMoreModal() {
             moreModal.classList.remove('active');
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
         }
 
         function openForm(formType) {
@@ -1041,159 +1284,72 @@
             
             // Close more modal if open
             closeMoreModal();
+            
+            // Add to history for back button support
+            history.pushState({ modal: 'form', form: formType }, '');
+            
+            // Show notification
+            showNotification(`Opening ${title}...`);
         }
 
         function closeFormModal() {
             formModal.classList.remove('active');
             formIframe.src = 'about:blank';
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
         }
 
-        // Pull to refresh simulation
-        let touchStartY = 0;
-        let isRefreshing = false;
-
-        mainContent.addEventListener('touchstart', (e) => {
-            touchStartY = e.touches[0].clientY;
-        });
-
-        mainContent.addEventListener('touchmove', (e) => {
-            if (mainContent.scrollTop === 0 && e.touches[0].clientY > touchStartY + 50 && !isRefreshing) {
-                isRefreshing = true;
-                simulateRefresh();
-            }
-        });
-
-        function simulateRefresh() {
-            // Show refreshing state
-            const activePage = document.querySelector('.page.active');
-            activePage.style.opacity = '0.7';
-            
-            setTimeout(() => {
-                // Simulate data refresh
-                updateDashboardData();
-                activePage.style.opacity = '1';
-                isRefreshing = false;
-                
-                // Show refresh notification
-                showNotification('Data refreshed successfully');
-            }, 1500);
-        }
-
-        function updateDashboardData() {
-            // Update stats with random variations
-            const stats = document.querySelectorAll('.stat-value');
-            stats.forEach(stat => {
-                const current = parseInt(stat.textContent.replace(/[^0-9]/g, ''));
-                const change = Math.floor(Math.random() * 10) - 2; // -2 to +7
-                const newValue = Math.max(0, current + change);
-                
-                // Animate the change
-                stat.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    stat.textContent = stat.textContent.replace(/[0-9]+/, newValue);
-                    stat.style.transform = 'scale(1)';
-                }, 300);
-            });
-        }
-
+        // Show notification
         function showNotification(message) {
-            // Create notification element
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--navy-blue);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px var(--shadow);
-                z-index: 10000;
-                animation: slideDown 0.3s ease;
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <span>${message}</span>
             `;
             
-            notification.textContent = message;
             document.body.appendChild(notification);
             
             // Remove after 3 seconds
             setTimeout(() => {
-                notification.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
+                notification.classList.add('hiding');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
             }, 3000);
         }
 
-        // Initialize the app
-        function initApp() {
-            setGreeting();
-            
-            // Simulate loading data
-            setTimeout(updateDashboardData, 500);
-            
-            // Add CSS for animations
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideDown {
-                    from { transform: translate(-50%, -20px); opacity: 0; }
-                    to { transform: translate(-50%, 0); opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { transform: translate(-50%, 0); opacity: 1; }
-                    to { transform: translate(-50%, -20px); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            // Set franchise name from URL or localStorage
-            const urlParams = new URLSearchParams(window.location.search);
-            const storeId = urlParams.get('store') || localStorage.getItem('emh_store') || 'NBO-DSOG001';
-            franchiseName.textContent = storeId;
-            localStorage.setItem('emh_store', storeId);
-            
-            // Make app installable
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(console.error);
-            }
-            
-            // Prevent pull-to-refresh on form modal
-            formModal.addEventListener('touchmove', (e) => {
-                if (formModal.classList.contains('active')) {
-                    e.preventDefault();
-                }
+        // Simulate data refresh
+        function refreshData() {
+            const stats = document.querySelectorAll('.stat-value');
+            stats.forEach(stat => {
+                const current = parseInt(stat.textContent.replace(/[^0-9]/g, '')) || 0;
+                const change = Math.floor(Math.random() * 10) - 2;
+                const newValue = Math.max(0, current + change);
+                
+                // Animate update
+                stat.style.opacity = '0.5';
+                setTimeout(() => {
+                    stat.textContent = stat.textContent.replace(/[0-9]+/, newValue);
+                    stat.style.opacity = '1';
+                }, 200);
             });
+            
+            showNotification('Data refreshed successfully');
         }
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', initApp);
 
-        // Handle back button for modals
-        window.addEventListener('popstate', () => {
-            if (moreModal.classList.contains('active')) {
-                closeMoreModal();
-            } else if (formModal.classList.contains('active')) {
-                closeFormModal();
+        // Handle app visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // App became visible, refresh data
+                refreshData();
             }
         });
 
-        // Update time periodically
-        setInterval(() => {
-            const now = new Date();
-            const timeElements = document.querySelectorAll('.activity-time');
-            
-            // Update relative times
-            timeElements.forEach(element => {
-                if (element.textContent.includes('AM') || element.textContent.includes('PM')) {
-                    // This is an absolute time, skip
-                    return;
-                }
-                
-                // Update relative times (simplified)
-                if (element.textContent === '10:15 AM') {
-                    // Keep as is
-                }
-            });
-        }, 60000); // Update every minute
+        // Auto-refresh every 5 minutes
+        setInterval(refreshData, 5 * 60 * 1000);
     </script>
 </body>
 </html>
