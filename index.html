@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMH | Purchase Orders Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy-blue: #0a192f;
+            --navy-light: #172a45;
+            --navy-lighter: #303c55;
+            --accent-blue: #64ffda;
+            --white: #ffffff;
+            --light-gray: #ccd6f6;
+            --shadow: rgba(2, 12, 27, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation */
+        .header {
+            background-color: var(--navy-blue);
+            color: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--accent-blue);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--navy-lighter);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--navy-blue);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(10, 25, 47, 0.05);
+        }
+
+        .nav-link.active {
+            background-color: var(--navy-blue);
+            color: var(--white);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-title {
+            color: var(--navy-blue);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            color: var(--navy-blue);
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Purchase Order Actions */
+        .actions-title {
+            color: var(--navy-blue);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.4rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+            font-size: 2rem;
+        }
+
+        .action-title {
+            color: var(--navy-blue);
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        .action-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-btn {
+            background-color: var(--navy-blue);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 200px;
+        }
+
+        .action-btn:hover {
+            background-color: var(--navy-light);
+            transform: scale(1.05);
+        }
+
+        /* Recent Activity */
+        .activity-section {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            color: var(--navy-blue);
+            margin-bottom: 1.2rem;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1rem;
+        }
+
+        .activity-details {
+            flex: 1;
+        }
+
+        .activity-details h4 {
+            color: var(--navy-blue);
+            margin-bottom: 5px;
+        }
+
+        .activity-details p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        /* Modal for Google Form */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background-color: var(--navy-blue);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 0;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .modal-iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--navy-blue);
+            color: var(--light-gray);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header, .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-cubes"></i>
+                <span>Enterprise Management Hub</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">JD</div>
+                <div>
+                    <div style="font-weight: 600;">John Doe</div>
+                    <div style="font-size: 0.8rem;">Nairobi Region • Store #042</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Purchase Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Sales Management</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-boxes"></i>
+                        <span>Inventory</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-truck"></i>
+                        <span>Suppliers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-clipboard-list" style="color: var(--accent-blue); margin-right: 10px;"></i>
+                    Purchase Orders Dashboard
+                </h1>
+                <div style="color: var(--navy-lighter); font-size: 0.9rem;">
+                    Last updated: Today, 10:30 AM
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>12</h3>
+                        <p>Pending Approvals</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>5</h3>
+                        <p>In Process</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>47</h3>
+                        <p>Completed This Month</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>$8,450</h3>
+                        <p>Total This Month</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchase Order Actions -->
+            <h2 class="actions-title">Purchase Order Actions</h2>
+            <div class="actions-grid">
+                <!-- New Purchase Order -->
+                <div class="action-card" onclick="openGoogleForm('new-po')">
+                    <div class="action-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3 class="action-title">New Purchase Order</h3>
+                    <p class="action-desc">Create a new purchase requisition. Select items, quantities, and submit for regional approval.</p>
+                    <button class="action-btn">Create New PO</button>
+                </div>
+
+                <!-- Track Order -->
+                <div class="action-card" onclick="openGoogleForm('track-po')">
+                    <div class="action-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="action-title">Track Order Status</h3>
+                    <p class="action-desc">Check the status of your submitted purchase orders. View approval stage and estimated delivery.</p>
+                    <button class="action-btn">Track Order</button>
+                </div>
+
+                <!-- Order History -->
+                <div class="action-card" onclick="openGoogleForm('history-po')">
+                    <div class="action-icon" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="action-title">Order History</h3>
+                    <p class="action-desc">View all past purchase orders, filter by date, status, or supplier. Export data for reporting.</p>
+                    <button class="action-btn">View History</button>
+                </div>
+
+                <!-- Drafts -->
+                <div class="action-card" onclick="openGoogleForm('draft-po')">
+                    <div class="action-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3 class="action-title">Draft Orders</h3>
+                    <p class="action-desc">Continue working on saved draft purchase orders. Edit and submit when ready.</p>
+                    <button class="action-btn">View Drafts</button>
+                </div>
+
+                <!-- Supplier Catalog -->
+                <div class="action-card" onclick="openGoogleForm('supplier-catalog')">
+                    <div class="action-icon" style="background-color: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+                        <i class="fas fa-address-book"></i>
+                    </div>
+                    <h3 class="action-title">Supplier Catalog</h3>
+                    <p class="action-desc">Browse approved suppliers and their catalogs. Check product availability and pricing.</p>
+                    <button class="action-btn">Browse Catalog</button>
+                </div>
+
+                <!-- Quick Reorder -->
+                <div class="action-card" onclick="openGoogleForm('quick-reorder')">
+                    <div class="action-icon" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <h3 class="action-title">Quick Reorder</h3>
+                    <p class="action-desc">Reorder frequently purchased items with one click. Based on your purchase history.</p>
+                    <button class="action-btn">Quick Reorder</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="activity-section">
+                <h2 class="section-title">
+                    <i class="fas fa-bell" style="color: var(--accent-blue);"></i>
+                    Recent Purchase Order Activity
+                </h2>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background-color: rgba(100, 255, 218, 0.1); color: var(--accent-blue);">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>New PO Created</h4>
+                            <p>Purchase Order #PO-2023-0421 for Nairobi Store</p>
+                        </div>
+                        <div class="activity-time">10:15 AM</div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>PO Approved</h4>
+                            <p>Purchase Order #PO-2023-0418 approved by Regional Manager</p>
+                        </div>
+                        <div class="activity-time">Yesterday, 3:45 PM</div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Awaiting Approval</h4>
+                            <p>Purchase Order #PO-2023-0419 pending regional approval</p>
+                        </div>
+                        <div class="activity-time">2 days ago</div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon" style="background-color: rgba(0, 123, 255, 0.1); color: #007bff;">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="activity-details">
+                            <h4>Order Shipped</h4>
+                            <p>Purchase Order #PO-2023-0415 shipped by Supplier</p>
+                        </div>
+                        <div class="activity-time">3 days ago</div>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Google Forms -->
+    <div id="googleFormModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Google Form</div>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="formIframe" class="modal-iframe" src="about:blank"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>Enterprise Management Hub (EMH) - Franchise Management System</div>
+        <div style="margin-top: 5px; font-size: 0.8rem; color: #8892b0;">
+            Powered by Google Workspace & Apps Script | © 2023 All Rights Reserved
+        </div>
+    </footer>
+
+    <script>
+        // Google Form URLs - Replace these with your actual Google Form URLs
+        const googleForms = {
+            'new-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_1/viewform?embedded=true',
+            'track-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_2/viewform?embedded=true',
+            'history-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_3/viewform?embedded=true',
+            'draft-po': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_4/viewform?embedded=true',
+            'supplier-catalog': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_5/viewform?embedded=true',
+            'quick-reorder': 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID_6/viewform?embedded=true'
+        };
+
+        // Modal functions
+        function openGoogleForm(formType) {
+            const modal = document.getElementById('googleFormModal');
+            const iframe = document.getElementById('formIframe');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // Set modal title based on form type
+            const titles = {
+                'new-po': 'Create New Purchase Order',
+                'track-po': 'Track Purchase Order',
+                'history-po': 'Purchase Order History',
+                'draft-po': 'Draft Purchase Orders',
+                'supplier-catalog': 'Supplier Catalog',
+                'quick-reorder': 'Quick Reorder'
+            };
+            
+            modalTitle.textContent = titles[formType] || 'Google Form';
+            
+            // Load the Google Form in iframe
+            iframe.src = googleForms[formType] || 'https://docs.google.com/forms/d/e/1FAIpQLSeXAMPLE_FORM_ID/viewform?embedded=true';
+            
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('googleFormModal');
+            const iframe = document.getElementById('formIframe');
+            
+            // Hide modal and reset iframe
+            modal.style.display = 'none';
+            iframe.src = 'about:blank';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('googleFormModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Simulate data updates (in real app, this would come from Apps Script)
+        function updateStats() {
+            // This would be replaced with actual API call to Apps Script
+            console.log("Updating dashboard stats...");
+        }
+
+        // Update stats every 60 seconds
+        setInterval(updateStats, 60000);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("EMH Purchase Orders Dashboard loaded");
+        });
+    </script>
+</body>
+</html>
